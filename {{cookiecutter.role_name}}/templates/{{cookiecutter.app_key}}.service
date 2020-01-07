@@ -1,4 +1,4 @@
-{{raw}}
+{% raw %} 
 [Unit]
 Description={{app_key}}
 After=network.target
@@ -24,4 +24,4 @@ Restart=always
 
 [Install]
 WantedBy=multi-user.target
-{{endraw}}
+{% endraw %} 

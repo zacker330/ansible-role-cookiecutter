@@ -1,6 +1,6 @@
 ---
 
-{{raw}}
+{% raw %} 
 - name: install systemd app.service unit
   template:
     src: "{{app_key}}"
@@ -21,4 +21,4 @@
 #     port: "{{ item }}"
 #     delay: 5
 #     connect_timeout: 1
-{{endraw}}
+{% endraw %} 

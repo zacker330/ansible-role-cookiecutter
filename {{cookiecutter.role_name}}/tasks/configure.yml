@@ -1,5 +1,5 @@
 ---
-{{raw}}
+{% raw %} 
 - name: "{{app_key}} install OS dependent packages {{ app_dep_os_pkgs }}"
   package:
     name: '{{ item }}'
@@ -81,4 +81,4 @@
     group: '{{ cassandra_group }}'
     force: true
 
-{{endraw}}
+{% endraw %} 
