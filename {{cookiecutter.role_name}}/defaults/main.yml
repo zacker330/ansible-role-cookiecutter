@@ -1,0 +1,19 @@
+---
+# defaults file for ansible-cassandra
+
+app_key: "{{app_key}}"
+app_install_parent_dir: "{{app_install_parent_dir}}"
+app_version: "{{app_version}}"
+app_sha256: "{{app_sha256}}"
+app_file: "{{app_file}}"
+app_group: "{{app_group}}"
+app_user: "{{app_user}}"
+
+{{raw}}
+#app_mirror: 'http://archive.apache.org/dist/cassandra'
+app_mirror: "http://127.0.0.1:9092"
+app_url: '{{ app_mirror }}/{{ app_key }}/{{ app_file }}'
+app_tarball_path: "{{playbook_dir}}/soft/{{app_file}}"
+app_link_dir: "/opt/{{app_key}}"
+app_install_dir: "{{ app_install_parent_dir }}/{{app_key}}-{{ app_version }}"
+{{endraw}}

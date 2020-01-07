@@ -1,0 +1,84 @@
+---
+{{raw}}
+- name: "{{app_key}} install OS dependent packages {{ app_dep_os_pkgs }}"
+  package:
+    name: '{{ item }}'
+    state: present
+  with_items: '{{ app_dep_os_pkgs }}'
+
+- name: 'ensure group {{ app_group }} exists'
+  group:
+    name: "{{ app_group }}"
+    state: present
+
+- name: 'ensure user {{ app_user }} exists'
+  user:
+    name: "{{ app_user }}"
+    state: present
+
+
+- when: not {{app_key}}.stat.exists
+  block:
+    - name: grab tarball
+      get_url:
+        url: '{{ app_url }}'
+        dest: '/tmp/{{ app_file }}'
+        mode: 0644
+        owner: '{{ app_user }}'
+        group: '{{ app_group }}'
+        sha256sum: "{{ app_sha256 }}"
+      register: app_tarball_grab_result
+      ignore_errors: yes
+      when: app_sha256 != ""
+
+    - name: grab tarball
+      get_url:
+        url: '{{ app_url }}'
+        dest: '/tmp/{{ app_file }}'
+        mode: 0644
+        owner: '{{ app_user }}'
+        group: '{{ app_group }}'
+      register: app_tarball_grab_result
+      ignore_errors: yes
+      when: app_sha256 == ""
+
+    - name: copy tarball when url error
+      copy:
+        src: "{{app_tarball_path}}"
+        dest: '/var/tmp/{{ cassandra_file }}'
+        mode: 0644
+        owner: '{{ app_user }}'
+        group: '{{ app_group }}'
+      when: app_tarball_grab_result.state != "success"
+
+    - name: unpack tarball
+      unarchive:
+        remote_src: true
+        src: '/tmp/{{ app_file }}'
+        dest: '{{ app_install_parent_dir }}'
+        # creates: '{{ cassandra_install_dir }}/bin/cassandra'
+
+    - name: chown tree
+      file:
+        path: "{{ app_install_dir }}"
+        owner: '{{ app_user }}'
+        group: '{{ app_group }}'
+        recurse: true
+  always:
+    - name: cleanup
+      become: true
+      become_user: root
+      file:
+        path: "/var/{{ app_file }}"
+        state: absent
+
+- name: symlink home
+  file:
+    src: '{{ app_install_dir }}'
+    dest: '{{ app_link_dir }}'
+    state: link
+    owner: '{{ cassandra_user }}'
+    group: '{{ cassandra_group }}'
+    force: true
+
+{{endraw}}

@@ -1,0 +1,24 @@
+---
+
+{{raw}}
+- name: install systemd app.service unit
+  template:
+    src: "{{app_key}}"
+    dest: '/etc/systemd/system/{{ item }}'
+    mode: 0644
+  register: app_service_installed
+
+- name: enable and start systemd service
+  systemd:
+    name: "{{app_key}}"
+    daemon_reload: "{{ app_service_installed.changed }}"
+    enabled: true
+    state: started
+
+# - name: Wait for {{app_key}} to startup
+#   wait_for:
+#     host: "{{inner_ip}}"
+#     port: "{{ item }}"
+#     delay: 5
+#     connect_timeout: 1
+{{endraw}}
